@@ -12,11 +12,15 @@ struct Edge {
 struct Graph {
     int V;
     std::vector<Edge> edges;
+    bool isDirected;         
 
-    Graph(int V = 0) : V(V) {}
+    Graph(int V = 0, bool directed = false) : V(V), isDirected(directed) {}
 
     void addEdge(int u, int v, int weight) {
         edges.push_back(Edge(u, v, weight));
+        if (!isDirected) {
+            edges.push_back(Edge(v, u, weight));
+        }
     }
 
     void printGraph() const {
@@ -70,10 +74,8 @@ std::vector<Edge> MSTKruskal(Graph &G) {
         std::cout << "Considerando aresta: " << u << " -- " << v << " com peso " << e.weight << "\n";
 
         if (findSet(u, parent) != findSet(v, parent)) {
-
             A.push_back(e);
             std::cout << "Aresta adicionada à MST: " << u << " -- " << v << "\n";
-
             unionSets(u, v, parent, rank);
         } else {
             std::cout << "Aresta descartada para evitar ciclo: " << u << " -- " << v << "\n";
@@ -103,6 +105,8 @@ void readGraphFile(const std::string &filename, Graph &graph) {
     int graphType;
     file >> graphType;
 
+    graph.isDirected = (graphType == 1);
+
     int numVertices;
     file >> numVertices;
     if (numVertices <= 0) {
@@ -122,7 +126,6 @@ void readGraphFile(const std::string &filename, Graph &graph) {
 
     file.close();
 }
-
 
 int main() {
     Graph G;

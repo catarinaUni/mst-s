@@ -7,14 +7,17 @@
 struct Graph {
     int V;
     std::vector<std::vector<std::pair<int, double>>> adj;
+    bool isDirected;
 
-    Graph(int V) : V(V) {
+    Graph(int V, bool directed = false) : V(V), isDirected(directed) {
         adj.resize(V);
     }
 
     void addEdge(int u, int v, double weight) {
         adj[u].push_back({v, weight});
-        adj[v].push_back({u, weight});
+        if (!isDirected) {
+            adj[v].push_back({u, weight});
+        }
     }
 };
 
@@ -159,7 +162,7 @@ void readGraphFile(const std::string &filename, Graph &graph) {
     if (numVertices < 0) {
         throw std::runtime_error("Número de vértices inválido.");
     }
-    graph = Graph(numVertices);
+    graph = Graph(numVertices, type == 1);
 
     int u, v;
     double weight;
@@ -174,7 +177,6 @@ void readGraphFile(const std::string &filename, Graph &graph) {
 }
 
 int main() {
-
     Graph G(0);
     try {
         readGraphFile("input.txt", G);
@@ -185,7 +187,6 @@ int main() {
     }
 
     std::vector<std::pair<int, int>> mstEdges = primMST(G, 0);
-
     printMST(mstEdges);
 
     return 0;
